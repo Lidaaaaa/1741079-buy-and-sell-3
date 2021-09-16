@@ -1,6 +1,6 @@
 # Учебный проект «Куплю. Продам» [![Build status][travis-image]][travis-url]
 
-* Студент: [Lidiya Sukhanova](https://up.htmlacademy.ru/nodejs/3/user/1741079).
+* Студент: [Lidaaaaa](https://up.htmlacademy.ru/nodejs/3/user/1741079).
 * Наставник: `Неизвестно`.
 
 ---
