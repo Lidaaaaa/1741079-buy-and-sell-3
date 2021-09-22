@@ -17,4 +17,4 @@ module.exports.HttpCode = {
   UNAUTHORIZED: 401
 };
 
-module.exports.MOCK_FILE_NAME = `mock.json`;
+module.exports.MOCK_FILE_NAME = `mocks.json`;
