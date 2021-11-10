@@ -3,7 +3,6 @@
 const {Router} = require(`express`);
 
 const {HttpCode} = require(`../../constants`);
-
 const offerValidator = require(`../middlewares/offer-validtator`);
 const offerExist = require(`../middlewares/offer-exists`);
 
