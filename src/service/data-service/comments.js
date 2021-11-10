@@ -4,8 +4,8 @@ const {nanoid} = require(`nanoid`);
 const {MAX_ID_LENGTH} = require(`../../constants`);
 
 class CommentService {
-  constructor(comments) {
-    this._comments = comments;
+  constructor(offers) {
+    this._comments = offers.reduce((acc, item) => acc.concat(item.comments), []);
   }
 
   create(offer, comment) {
@@ -27,8 +27,12 @@ class CommentService {
     return dropComment;
   }
 
-  findAll(offer) {
+  findAllByOffer(offer) {
     return offer.comments;
+  }
+
+  findAll() {
+    return this._comments;
   }
 }
 

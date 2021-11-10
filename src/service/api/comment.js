@@ -6,10 +6,10 @@ const {HttpCode} = require(`../../constants`);
 module.exports = (app, service) => {
   const route = new Router();
 
-  app.use(`/categories`, route);
+  app.use(`/comments`, route);
 
   route.get(`/`, (req, res) => {
-    const categories = service.findAll();
-    res.status(HttpCode.OK).json(categories);
+    const offers = service.findAll();
+    res.status(HttpCode.OK).json(offers);
   });
 };
