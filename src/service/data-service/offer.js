@@ -30,13 +30,11 @@ class OfferService {
   }
 
   findOne(id) {
-    console.log(id);
     return this._offers.find((item) => item.id === id);
   }
 
-  update(id, offer) {
-    const oldOffer = this.findOne(id);
-    return Object.assign(oldOffer, offer);
+  update(prevOffer, offer) {
+    return Object.assign(prevOffer, offer);
   }
 }
 

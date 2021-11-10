@@ -83,7 +83,7 @@ module.exports = {
     }
 
     const content = JSON.stringify(
-      generateOffers(countOffer, titles, sentences, categories, comments)
+        generateOffers(countOffer, titles, sentences, categories, comments)
     );
 
     try {
