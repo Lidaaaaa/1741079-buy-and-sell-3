@@ -9,7 +9,7 @@ module.exports = (app, service) => {
   app.use(`/comments`, route);
 
   route.get(`/`, (req, res) => {
-    const offers = service.findAll();
-    res.status(HttpCode.OK).json(offers);
+    const comments = service.findAll();
+    res.status(HttpCode.OK).json(comments);
   });
 };
