@@ -5,7 +5,7 @@ const {MAX_ID_LENGTH} = require(`../../constants`);
 
 class CommentService {
   constructor(offers) {
-    this._comments = offers.reduce((acc, item) => acc.concat(item.comments), []);
+    this._offers = offers;
   }
 
   create(offer, comment) {
@@ -32,7 +32,7 @@ class CommentService {
   }
 
   findAll() {
-    return this._comments;
+    return this._offers.reduce((acc, item) => acc.concat(item.comments), []);
   }
 }
 
