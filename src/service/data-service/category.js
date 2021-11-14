@@ -3,7 +3,7 @@
 class CategoryService {
   constructor(offers) {
     this._categories = offers.reduce((acc, offer) => {
-      offer.category.forEach((category) => acc.add(category));
+      acc.add(offer.category);
       return acc;
     }, new Set());
   }

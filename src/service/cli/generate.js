@@ -63,7 +63,7 @@ const generateOffers = (count, titles, sentences, categories, comments) =>
         Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)]
       ],
       sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
-      category: [categories[getRandomInt(0, categories.length - 1)]],
+      category: categories[getRandomInt(0, categories.length - 1)],
       comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments)
     }));
 

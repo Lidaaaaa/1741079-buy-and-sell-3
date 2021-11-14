@@ -13,7 +13,6 @@ const app = express();
 app.use(express.json());
 app.use(API_PREFIX, routers);
 
-
 app.use((req, res) => res.status(HttpCode.NOT_FOUND).send(`Not found`));
 
 module.exports = {

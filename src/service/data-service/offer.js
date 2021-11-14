@@ -14,14 +14,8 @@ class OfferService {
     return newOffer;
   }
 
-  drop(id) {
-    const offer = this._offers.find((item) => item.id === id);
-
-    if (!offer) {
-      return null;
-    }
-
-    this._offers = this._offers.filter((item) => item.id !== id);
+  drop(offer) {
+    this._offers = this._offers.filter((item) => item.id !== offer.id);
     return offer;
   }
 

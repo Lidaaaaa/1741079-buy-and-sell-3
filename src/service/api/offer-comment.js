@@ -18,26 +18,22 @@ module.exports = (app, offerService, commentService) => {
     return res.status(HttpCode.OK).json(comments);
   });
 
-  route.post(`/:offerId/comments`, commentValidator, (req, res) => {
+  route.post(`/:offerId/comments`, [offerExist(offerService), commentValidator], (req, res) => {
     const {offer} = res.locals;
     const comment = commentService.create(offer, req.body);
 
     return res.status(HttpCode.CREATED).json(comment);
   });
 
-  route.delete(
-      `/:offerId/comments/:commentId`,
-      [offerExist(offerService), commentValidator],
-      (req, res) => {
-        const {offer} = res.locals;
-        const {commentId} = req.params;
-        const deletedComment = commentService.drop(offer, commentId);
+  route.delete(`/:offerId/comments/:commentId`, offerExist(offerService), (req, res) => {
+    const {offer} = res.locals;
+    const {commentId} = req.params;
+    const deletedComment = commentService.drop(offer, commentId);
 
-        if (!deletedComment) {
-          return res.status(HttpCode.NOT_FOUND).send(deletedComment);
-        }
+    if (!deletedComment) {
+      return res.status(HttpCode.NOT_FOUND).send(deletedComment);
+    }
 
-        return res.status(HttpCode.OK).json(deletedComment);
-      }
-  );
+    return res.status(HttpCode.OK).json(deletedComment);
+  });
 };

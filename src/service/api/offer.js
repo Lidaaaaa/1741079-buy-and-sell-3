@@ -28,8 +28,8 @@ module.exports = (app, service) => {
     return res.status(HttpCode.CREATED).json(offer);
   });
 
-  route.put(`/:offerId`, offerExist(service), (req, res) => {
-    const {offer} = req.locals;
+  route.put(`/:offerId`, [offerValidator, offerExist(service)], (req, res) => {
+    const {offer} = res.locals;
     const updatedOffer = service.update(offer, req.body);
 
     return res.status(HttpCode.OK).json(updatedOffer);
@@ -37,7 +37,8 @@ module.exports = (app, service) => {
 
   route.delete(`/:offerId`, offerExist(service), (req, res) => {
     const {offer} = res.locals;
+    const droppedOffer = service.drop(offer);
 
-    return res.status(HttpCode.OK).json(offer);
+    return res.status(HttpCode.OK).json(droppedOffer);
   });
 };
