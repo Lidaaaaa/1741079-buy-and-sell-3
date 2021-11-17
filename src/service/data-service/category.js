@@ -2,14 +2,15 @@
 
 class CategoryService {
   constructor(offers) {
-    this._categories = offers.reduce((acc, offer) => {
-      acc.add(offer.category);
-      return acc;
-    }, new Set());
+    this._offers = offers;
   }
 
   findAll() {
-    return [...this._categories];
+    const categories = this._offers.reduce((acc, offer) => {
+      acc.add(offer.category);
+      return acc;
+    }, new Set());
+    return [...categories];
   }
 }
 

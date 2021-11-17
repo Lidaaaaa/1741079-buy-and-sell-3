@@ -31,7 +31,7 @@ module.exports = (app, offerService, commentService) => {
     const deletedComment = commentService.drop(offer, commentId);
 
     if (!deletedComment) {
-      return res.status(HttpCode.NOT_FOUND).send(deletedComment);
+      return res.status(HttpCode.NOT_FOUND).send(`Comment with ${commentId} not found`);
     }
 
     return res.status(HttpCode.OK).json(deletedComment);
