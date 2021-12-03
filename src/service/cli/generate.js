@@ -4,32 +4,9 @@ const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 
-const {ExitCode, MOCK_FILE_NAME, MAX_ID_LENGTH} = require(`../../constants`);
+const {Files, MAX_ID_LENGTH, ExitCode} = require(`../../constants`);
+const {OfferType, DataFiles, GenerateParams} = require(`./constants`);
 const {getRandomInt, shuffle} = require(`../../utils`);
-
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`;
-
-const DEFAULT_COUNT = 1;
-const MAX_COUNT = 1000;
-const MAX_COMMENTS = 4;
-
-const OfferType = {
-  OFFER: `offer`,
-  SALE: `sale`
-};
-
-const SumRestrict = {
-  MIN: 1000,
-  MAX: 100000
-};
-
-const PictureRestrict = {
-  MIN: 1,
-  MAX: 16
-};
 
 const readContent = async (filePath) => {
   try {
@@ -57,29 +34,30 @@ const generateOffers = (count, titles, sentences, categories, comments) =>
     .map(() => ({
       id: nanoid(MAX_ID_LENGTH),
       title: titles[getRandomInt(0, titles.length - 1)],
-      picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
+      picture: getPictureFileName(
+          getRandomInt(GenerateParams.MIN_PICTURE, GenerateParams.MAX_PICTURE)
+      ),
       description: shuffle(sentences).slice(1, 5).join(` `),
       type: OfferType[
         Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)]
       ],
-      sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
+      sum: getRandomInt(GenerateParams.MIN_SUM, GenerateParams.MAX_SUM),
       category: categories[getRandomInt(0, categories.length - 1)],
-      comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments)
+      comments: generateComments(getRandomInt(1, GenerateParams.MAX_COMMENTS), comments)
     }));
 
 module.exports = {
   name: `--generate`,
   async run(args) {
     const [count] = args;
-    const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const titles = await readContent(FILE_TITLES_PATH);
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const comments = await readContent(FILE_COMMENTS_PATH);
+    const countOffer = Number.parseInt(count, 10) || GenerateParams.DEFAULT_COUNT;
+    const [titles, sentences, categories, comments] = await Promise.all(
+        Object.values(DataFiles).map((item) => readContent(item))
+    );
 
-    if (countOffer > MAX_COUNT) {
+    if (countOffer > GenerateParams.MAX_COUNT) {
       console.error(chalk.red(`Не больше 1000 объявлений`));
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
 
     const content = JSON.stringify(
@@ -87,12 +65,12 @@ module.exports = {
     );
 
     try {
-      await fs.writeFile(MOCK_FILE_NAME, content);
+      await fs.writeFile(Files.MOCK_DATA, content);
       console.info(chalk.green(`Operation success. File created.`));
-      process.exit(ExitCode.success);
+      process.exit(ExitCode.SUCCESS);
     } catch (e) {
       console.error(chalk.red(`Can't write data to file...`));
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
   }
 };
