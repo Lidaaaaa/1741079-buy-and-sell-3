@@ -2,34 +2,41 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
+const initDB = require(`../lib/init-db`);
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
 const {HttpCode} = require(`../../constants`);
 
-const mockData = [
+const mockCategories = [`Книги`, `Цветы`, `Животные`, `Разное`];
+
+const mockOffers = [
   {
-    id: `AusDhG`,
     title: `Продам коллекцию журналов «Огонёк».`,
     picture: `item04.jpg`,
     description: `Продаю с болью в сердце... Если товар не понравится — верну всё до последней копейки. Кому нужен этот новый телефон если тут такое... Если найдёте дешевле — сброшу цену.`,
     type: `offer`,
     sum: 76453,
-    category: `Книги`,
+    categories: [`Книги`, `Разное`],
     comments: [
       {
-        id: `nGE90J`,
         text: `С чем связана продажа? Почему так дешёво? Оплата наличными или перевод на карту? Продаю в связи с переездом. Отрываю от сердца.`
       },
-      {id: `pD9cEw`, text: `Оплата наличными или перевод на карту?`},
-      {id: `l_zZ76`, text: `А сколько игр в комплекте?`}
+      {text: `Оплата наличными или перевод на карту?`},
+      {text: `А сколько игр в комплекте?`}
     ]
   }
 ];
 
+const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
 const app = express();
 app.use(express.json());
-search(app, new DataService(mockData));
+
+beforeAll(async () => {
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers});
+  search(app, new DataService(mockDB));
+});
 
 describe(`API returns offer based on search query`, () => {
   let response;
@@ -42,7 +49,8 @@ describe(`API returns offer based on search query`, () => {
 
   test(`1 offer found`, () => expect(response.body.length).toBe(1));
 
-  test(`Offer has correct id`, () => expect(response.body[0].id).toBe(`AusDhG`));
+  test(`Offer has correct title`, () =>
+    expect(response.body[0].title).toBe(`Продам коллекцию журналов «Огонёк».`));
 });
 
 test(`API returns code 404 if nothing is found`, () =>

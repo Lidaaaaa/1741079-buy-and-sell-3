@@ -2,60 +2,117 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
+const initDB = require(`../lib/init-db`);
 const category = require(`./category`);
-const DataService = require(`./../data-service/category`);
+const DataService = require(`../data-service/category`);
+
 const {HttpCode} = require(`../../constants`);
 
-const mockData = [
+const mockCategories = [`Животные`, `Журналы`, `Игры`];
+
+const mockOffers = [
   {
-    id: `DEgFOJ`,
-    title: `Продам книги Стивена Кинга.`,
-    picture: `item16.jpg`,
-    description: `Кажется что это хрупкая вещь. При покупке с меня бесплатная доставка в черте города. Таких предложений больше нет! Пользовались бережно и только по большим праздникам.`,
-    type: `offer`,
-    sum: 28633,
-    category: `Животные`,
+    categories: [`Игры`, `Журналы`],
     comments: [
       {
-        id: `4eVK76`,
-        text: `Оплата наличными или перевод на карту? С чем связана продажа? Почему так дешёво? Неплохо, но дорого.`
+        text: `С чем связана продажа? Почему так дешёво? Неплохо, но дорого. А где блок питания?`
       },
-      {id: `uNACyq`, text: `Вы что?! В магазине дешевле. Оплата наличными или перевод на карту?`},
-      {id: `gmXa6W`, text: `А где блок питания?`},
-      {id: `sLsGhU`, text: `Совсем немного...`}
-    ]
+      {
+        text: `А где блок питания?`
+      },
+      {
+        text: `Оплата наличными или перевод на карту? Неплохо, но дорого. Почему в таком ужасном состоянии?`
+      }
+    ],
+    description: `Бонусом отдам все аксессуары. Если товар не понравится — верну всё до последней копейки. Товар в отличном состоянии. Это настоящая находка для коллекционера!`,
+    picture: `item13.jpg`,
+    title: `Куплю антиквариат`,
+    type: `offer`,
+    sum: 10030
   },
   {
-    id: `_MKUGF`,
-    title: `Продам отличную подборку фильмов на VHS.`,
-    picture: `item05.jpg`,
-    description: `Это настоящая находка для коллекционера! Продаю с болью в сердце... Если товар не понравится — верну всё до последней копейки. Не пытайтесь торговаться. Цену вещам я знаю.`,
-    type: `offer`,
-    sum: 95329,
-    category: `Книги`,
+    categories: [`Игры`],
     comments: [
       {
-        id: `aomvie`,
-        text: `Вы что?! В магазине дешевле. С чем связана продажа? Почему так дешёво? Неплохо, но дорого.`
+        text: `А где блок питания? С чем связана продажа? Почему так дешёво?`
+      },
+      {
+        text: `А сколько игр в комплекте?`
+      },
+      {
+        text: `Оплата наличными или перевод на карту? Вы что?! В магазине дешевле.`
       }
-    ]
+    ],
+    description: `Это настоящая находка для коллекционера! Если найдёте дешевле — сброшу цену. Продаю с болью в сердце... Товар в отличном состоянии.`,
+    picture: `item06.jpg`,
+    title: `Куплю породистого кота`,
+    type: `offer`,
+    sum: 6694
   },
   {
-    id: `ceDhLz`,
-    title: `Отдам в хорошие руки подшивку «Мурзилка».`,
-    picture: `item12.jpg`,
-    description: `Кому нужен этот новый телефон если тут такое... Мой дед не мог её сломать. Не пытайтесь торговаться. Цену вещам я знаю. Таких предложений больше нет!`,
+    categories: [`Журналы`, `Животные`],
+    comments: [
+      {
+        text: `Совсем немного... А сколько игр в комплекте? Неплохо, но дорого.`
+      }
+    ],
+    description: `Пользовались бережно и только по большим праздникам. Продаю с болью в сердце... Даю недельную гарантию. Если товар не понравится — верну всё до последней копейки.`,
+    picture: `item16.jpg`,
+    title: `Продам слона`,
+    type: `sale`,
+    sum: 87784
+  },
+  {
+    categories: [`Игры`],
+    comments: [
+      {
+        text: `А сколько игр в комплекте? Продаю в связи с переездом. Отрываю от сердца.`
+      },
+      {
+        text: `С чем связана продажа? Почему так дешёво?`
+      }
+    ],
+    description: `При покупке с меня бесплатная доставка в черте города. Бонусом отдам все аксессуары. Если найдёте дешевле — сброшу цену. Продаю с болью в сердце...`,
+    picture: `item13.jpg`,
+    title: `Продам отличную подборку фильмов на VHS`,
+    type: `sale`,
+    sum: 54264
+  },
+  {
+    categories: [`Животные`],
+    comments: [
+      {
+        text: `Оплата наличными или перевод на карту?`
+      },
+      {
+        text: `Почему в таком ужасном состоянии? Совсем немного...`
+      },
+      {
+        text: `Продаю в связи с переездом. Отрываю от сердца. Оплата наличными или перевод на карту? Вы что?! В магазине дешевле.`
+      },
+      {
+        text: `С чем связана продажа? Почему так дешёво? А сколько игр в комплекте?`
+      }
+    ],
+    description: `Таких предложений больше нет! Даю недельную гарантию. Продаю с болью в сердце... Пользовались бережно и только по большим праздникам.`,
+    picture: `item15.jpg`,
+    title: `Куплю породистого кота`,
     type: `offer`,
-    sum: 87924,
-    category: `Игры`,
-    comments: [{id: `_CvHc4`, text: `А сколько игр в комплекте?`}]
+    sum: 91863
   }
 ];
 
+const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+
 const app = express();
 app.use(express.json());
-category(app, new DataService(mockData));
+
+beforeAll(async () => {
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers});
+  category(app, new DataService(mockDB));
+});
 
 describe(`API returns category list`, () => {
   let response;
@@ -68,6 +125,8 @@ describe(`API returns category list`, () => {
 
   test(`Returns list of 3 categories`, () => expect(response.body.length).toBe(3));
 
-  test(`Category names are  "Животные","Книги","Игры"`, () =>
-    expect(response.body).toEqual(expect.arrayContaining([`Животные`, `Книги`, `Игры`])));
+  test(`Category names are "Журналы", "Игры", "Животные"`, () =>
+    expect(response.body.map((it) => it.name)).toEqual(
+        expect.arrayContaining([`Журналы`, `Игры`, `Животные`])
+    ));
 });

@@ -8,8 +8,8 @@ module.exports = (app, service) => {
 
   app.use(`/comments`, route);
 
-  route.get(`/`, (req, res) => {
-    const comments = service.findAll();
+  route.get(`/`, async (_req, res) => {
+    const comments = await service.findAll();
     res.status(HttpCode.OK).json(comments);
   });
 };

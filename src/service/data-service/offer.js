@@ -1,34 +1,71 @@
 "use strict";
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
+const Alias = require(`../models/alias`);
 
 class OfferService {
-  constructor(offers) {
-    this._offers = offers;
+  constructor(sequelize) {
+    this._offer = sequelize.models.Offer;
+    this._comment = sequelize.models.Comment;
+    this._category = sequelize.models.Category;
   }
 
-  create(offer) {
-    const newOffer = Object.assign({id: nanoid(MAX_ID_LENGTH), comments: []}, offer);
-    this._offers.push(newOffer);
-    return newOffer;
+  async create(data) {
+    const offer = await this._offer.create(data);
+    await offer.addCategories(data.categories);
+    return offer.get();
   }
 
-  drop(offer) {
-    this._offers = this._offers.filter((item) => item.id !== offer.id);
-    return offer;
+  async drop(id) {
+    const deletedOffer = await this._offer.destroy({
+      where: {id}
+    });
+
+    return !!deletedOffer;
   }
 
-  findAll() {
-    return this._offers;
+  async findAll(needComments) {
+    const include = [Alias.CATEGORIES];
+
+    if (needComments) {
+      include.push(Alias.COMMENTS);
+    }
+
+    const offers = await this._offer.findAll({
+      include,
+      order: [[`createdAt`, `DESC`]]
+    });
+
+    return offers.map((item) => item.get());
   }
 
-  findOne(id) {
-    return this._offers.find((item) => item.id === id);
+  async findOne(id, needComments) {
+    const include = [Alias.CATEGORIES];
+
+    if (needComments) {
+      include.push(Alias.COMMENTS);
+    }
+
+    return await this._offer.findByPk(id, {include});
   }
 
-  update(prevOffer, offer) {
-    return Object.assign(prevOffer, offer);
+  async update(id, offer) {
+    const [affectedRows] = await this._offer.update(offer, {
+      where: {id}
+    });
+
+    return !!affectedRows;
+  }
+
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._offer.findAndCountAll({
+      limit,
+      offset,
+      include: [Alias.CATEGORIES],
+      order: [[`createdAt`, `DESC`]],
+      distinct: true
+    });
+
+    return {count, offers: rows};
   }
 }
 

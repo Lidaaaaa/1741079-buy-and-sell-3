@@ -30,7 +30,11 @@ offersRouter.get(`/add`, async (_req, res) => {
   res.render(`offers/ticket-add`, {categories});
 });
 
-offersRouter.get(`/:id`, (_req, res) => res.render(`offers/ticket`));
+offersRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+  const offer = await api.getOffer(id, {comments: true});
+  res.render(`offers/ticket`, {offer});
+});
 
 offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
   const {body, file} = req;
