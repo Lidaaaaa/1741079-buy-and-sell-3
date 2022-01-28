@@ -11,9 +11,12 @@ module.exports = (app, service) => {
 
   app.use(`/offers`, route);
 
-  route.get(`/`, (req, res) => {
-    const offers = service.findAll();
-    return res.status(HttpCode.OK).json(offers);
+  route.get(`/`, async (req, res) => {
+    const {offset, limit, comments} = req.query;
+    let result =
+      limit || offset ? await service.findPage({limit, offset}) : await service.findAll(comments);
+
+    return res.status(HttpCode.OK).json(result);
   });
 
   route.get(`/:offerId`, offerExist(service), (req, res) => {
@@ -22,22 +25,22 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(offer);
   });
 
-  route.post(`/`, offerValidator, (req, res) => {
-    const offer = service.create(req.body);
+  route.post(`/`, offerValidator, async (req, res) => {
+    const offer = await service.create(req.body);
 
     return res.status(HttpCode.CREATED).json(offer);
   });
 
-  route.put(`/:offerId`, [offerValidator, offerExist(service)], (req, res) => {
+  route.put(`/:offerId`, [offerValidator, offerExist(service)], async (req, res) => {
     const {offer} = res.locals;
-    const updatedOffer = service.update(offer, req.body);
+    const updatedOffer = await service.update(offer.id, req.body);
 
     return res.status(HttpCode.OK).json(updatedOffer);
   });
 
-  route.delete(`/:offerId`, offerExist(service), (req, res) => {
+  route.delete(`/:offerId`, offerExist(service), async (_req, res) => {
     const {offer} = res.locals;
-    const droppedOffer = service.drop(offer);
+    const droppedOffer = await service.drop(offer.id);
 
     return res.status(HttpCode.OK).json(droppedOffer);
   });

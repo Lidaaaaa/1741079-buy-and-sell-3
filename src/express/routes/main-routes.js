@@ -7,9 +7,21 @@ const mainRouter = new Router();
 
 const api = getAPI();
 
-mainRouter.get(`/`, async (_req, res) => {
-  const offers = await api.getOffers();
-  res.render(`main/main`, {offers});
+const OFFERS_PER_PAGE = 8;
+
+mainRouter.get(`/`, async (req, res) => {
+  let {page = 1} = req.query;
+  page = +page;
+
+  const limit = OFFERS_PER_PAGE;
+  const offset = (page - 1) * OFFERS_PER_PAGE;
+  const [{count, offers}, categories] = await Promise.all([
+    api.getOffers({limit, offset}),
+    api.getCategories(true)
+  ]);
+
+  const totalPage = Math.ceil(count / OFFERS_PER_PAGE);
+  res.render(`main/main`, {offers, categories, totalPage, page});
 });
 
 mainRouter.get(`/register`, (_req, res) => res.render(`main/sign-up`));
