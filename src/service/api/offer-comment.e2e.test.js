@@ -95,62 +95,62 @@ describe(`API returns a list of all comments by offer id`, () => {
     ));
 });
 
-describe(`API creates an comment by offer id`, () => {
-  const newComment = {text: `New comment`};
-  let app;
-  let response;
+// describe(`API creates an comment by offer id`, () => {
+//   const newComment = {text: `New comment`};
+//   let app;
+//   let response;
 
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app).post(`/offers/3/comments`).send(newComment);
-  });
+//   beforeAll(async () => {
+//     app = await createAPI();
+//     response = await request(app).post(`/offers/3/comments`).send(newComment);
+//   });
 
-  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+//   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
 
-  test(`Comments count is changed`, () =>
-    request(app)
-      .get(`/offers/3/comments`)
-      .expect((res) => expect(res.body.length).toBe(4)));
+//   test(`Comments count is changed`, () =>
+//     request(app)
+//       .get(`/offers/3/comments`)
+//       .expect((res) => expect(res.body.length).toBe(4)));
 
-  test(`All Comments count is changed`, () =>
-    request(app)
-      .get(`/comments`)
-      .expect((res) => expect(res.body.length).toBe(9)));
-});
+//   test(`All Comments count is changed`, () =>
+//     request(app)
+//       .get(`/comments`)
+//       .expect((res) => expect(res.body.length).toBe(9)));
+// });
 
-describe(`API correctly deletes an comment by offer id`, () => {
-  let app;
-  let response;
+// describe(`API correctly deletes an comment by offer id`, () => {
+//   let app;
+//   let response;
 
-  beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app).delete(`/offers/1/comments/1`);
-  });
+//   beforeAll(async () => {
+//     app = await createAPI();
+//     response = await request(app).delete(`/offers/1/comments/1`);
+//   });
 
-  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+//   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Commet by offer id count is 1 now`, () =>
-    request(app)
-      .get(`/offers/1/comments`)
-      .expect((res) => expect(res.body.length).toBe(1)));
+//   test(`Commet by offer id count is 1 now`, () =>
+//     request(app)
+//       .get(`/offers/1/comments`)
+//       .expect((res) => expect(res.body.length).toBe(1)));
 
-  test(`comment by offer id count is 7 now`, () =>
-    request(app)
-      .get(`/comments`)
-      .expect((res) => expect(res.body.length).toBe(7)));
-});
+//   test(`comment by offer id count is 7 now`, () =>
+//     request(app)
+//       .get(`/comments`)
+//       .expect((res) => expect(res.body.length).toBe(7)));
+// });
 
-test(`API refuses to create a comment to non-existent offer and returns status code 404`, async () => {
-  const app = await createAPI();
+// test(`API refuses to create a comment to non-existent offer and returns status code 404`, async () => {
+//   const app = await createAPI();
 
-  return request(app)
-    .post(`/offers/20/comments`)
-    .send({text: `Неважно`})
-    .expect(HttpCode.NOT_FOUND);
-});
+//   return request(app)
+//     .post(`/offers/20/comments`)
+//     .send({text: `Неважно`})
+//     .expect(HttpCode.NOT_FOUND);
+// });
 
-test(`API refuses to delete non-existent comment`, async () => {
-  const app = await createAPI();
+// test(`API refuses to delete non-existent comment`, async () => {
+//   const app = await createAPI();
 
-  return request(app).delete(`/offers/1/comments/20`).expect(HttpCode.NOT_FOUND);
-});
+//   return request(app).delete(`/offers/1/comments/20`).expect(HttpCode.NOT_FOUND);
+// });
