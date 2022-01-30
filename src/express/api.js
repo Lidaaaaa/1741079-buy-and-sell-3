@@ -2,7 +2,7 @@
 
 const axios = require(`axios`);
 
-const {DEFAULT_API_PORT, API_TIMEOUT, API_PREFIX} = require(`../constants`);
+const {DEFAULT_API_PORT, API_TIMEOUT, API_PREFIX, HttpMethod} = require(`../constants`);
 
 const port = process.env.API_PORT || DEFAULT_API_PORT;
 const defaultURL = `http://localhost:${port}${API_PREFIX}/`;
@@ -38,13 +38,27 @@ class API {
 
   createOffer(data) {
     return this._load(`/offers`, {
-      method: `POST`,
+      method: HttpMethod.POST,
       data
     });
   }
 
   getComments() {
     return this._load(`/comments`);
+  }
+
+  editOffer(id, data) {
+    return this._load(`/offers/${id}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
+
+  createComment(id, data) {
+    return this._load(`/offers/${id}/comments`, {
+      method: HttpMethod.POST,
+      data
+    });
   }
 }
 

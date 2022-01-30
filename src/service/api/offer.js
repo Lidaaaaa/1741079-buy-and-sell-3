@@ -31,7 +31,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.CREATED).json(offer);
   });
 
-  route.put(`/:offerId`, [offerValidator, offerExist(service)], async (req, res) => {
+  route.put(`/:offerId`, [offerExist(service), offerValidator], async (req, res) => {
     const {offer} = res.locals;
     const updatedOffer = await service.update(offer.id, req.body);
 

@@ -83,7 +83,7 @@ describe(`API creates an offer if data is valid`, () => {
   const newOffer = {
     categories: [2],
     title: `Дам погладить котика`,
-    description: `Дам погладить котика. Дорого. Не гербалайф`,
+    description: `Дам погладить котика. Дорого. Не гербалайф. Сто процентный результат!`,
     picture: `cat.jpg`,
     type: `offer`,
     sum: 100500
@@ -109,7 +109,7 @@ describe(`API refuses to create an offer if data is invalid`, () => {
   const newOffer = {
     categories: [1, 2],
     title: `Дам погладить котика`,
-    description: `Дам погладить котика. Дорого. Не гербалайф`,
+    description: `Давно выяснено, что при оценке дизайна и композиции читаемый текст мешает сосредоточиться.`,
     picture: `cat.jpg`,
     type: `offer`,
     sum: 100500
@@ -121,10 +121,24 @@ describe(`API refuses to create an offer if data is invalid`, () => {
     app = await createAPI();
   });
 
-  test(`Without any required property response code is 400`, async () => {
-    for (const key of Object.keys(newOffer)) {
-      const badOffer = {...newOffer, categories: newOffer.categories.slice(0)};
-      delete badOffer[key];
+  test(`When field type is wrong response code is 400`, async () => {
+    const badOffers = [
+      {...newOffer, sum: true},
+      {...newOffer, picture: 12345},
+      {...newOffer, categories: `Котики`}
+    ];
+    for (const badOffer of badOffers) {
+      await request(app).post(`/offers`).send(badOffer).expect(HttpCode.BAD_REQUEST);
+    }
+  });
+
+  test(`When field value is wrong response code is 400`, async () => {
+    const badOffers = [
+      {...newOffer, sum: -1},
+      {...newOffer, title: `too short`},
+      {...newOffer, categories: []}
+    ];
+    for (const badOffer of badOffers) {
       await request(app).post(`/offers`).send(badOffer).expect(HttpCode.BAD_REQUEST);
     }
   });
@@ -134,7 +148,7 @@ describe(`API changes existent offer`, () => {
   const newOffer = {
     categories: [2],
     title: `Дам погладить котика`,
-    description: `Дам погладить котика. Дорого. Не гербалайф`,
+    description: `Давно выяснено, что при оценке дизайна и композиции читаемый текст мешает сосредоточиться.`,
     picture: `cat.jpg`,
     type: `offer`,
     sum: 100500
@@ -162,8 +176,8 @@ test(`API returns status code 404 when trying to change non-existent offer`, asy
   const validOffer = {
     categories: [1],
     title: `валидный`,
-    description: `объект`,
-    picture: `объявления`,
+    description: `Давно выяснено, что при оценке дизайна и композиции читаемый текст мешает сосредоточиться.`,
+    picture: `объявления.jpg`,
     type: `однако`,
     sum: 404
   };
@@ -176,12 +190,12 @@ test(`API returns status code 400 when trying to change an offer with invalid da
   const invalidOffer = {
     categories: [3],
     title: `невалидный`,
-    description: `объект`,
-    picture: `объявления`,
+    description: `Давно выяснено, что при оценке дизайна и композиции читаемый текст мешает сосредоточиться.`,
+    picture: `объявления.jpg`,
     type: `нет поля sum`
   };
 
-  return request(app).put(`/offers/2`).send(invalidOffer).expect(HttpCode.BAD_REQUEST);
+  return request(app).put(`/offers/1`).send(invalidOffer).expect(HttpCode.BAD_REQUEST);
 });
 
 describe(`API correctly deletes an offer`, () => {

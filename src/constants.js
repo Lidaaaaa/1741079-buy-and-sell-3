@@ -37,3 +37,10 @@ module.exports.API_TIMEOUT = 1000;
 module.exports.DEFAULT_API_PORT = 3000;
 
 module.exports.DEFAULT_FRONT_SERVER_PORT = 8080;
+
+module.exports.HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
