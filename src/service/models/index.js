@@ -5,12 +5,14 @@ const defineCategory = require(`./category`);
 const defineComment = require(`./comment`);
 const defineOffer = require(`./offer`);
 const defineOfferCategory = require(`./offer-category`);
+const defineUser = require(`./user`);
 
 const define = (sequelize) => {
   const Category = defineCategory(sequelize);
   const Comment = defineComment(sequelize);
   const Offer = defineOffer(sequelize);
   const OfferCategory = defineOfferCategory(sequelize);
+  const User = defineUser(sequelize);
 
   Offer.hasMany(Comment, {
     as: Alias.COMMENTS,
@@ -36,7 +38,27 @@ const define = (sequelize) => {
     as: Alias.OFFERS_CATEGORIES
   });
 
-  return {Category, Comment, Offer, OfferCategory};
+  User.hasMany(Offer, {
+    as: Alias.OFFERS,
+    foreignKey: `userId`
+  });
+
+  Offer.belongsTo(User, {
+    as: Alias.USERS,
+    foreignKey: `userId`
+  });
+
+  User.hasMany(Comment, {
+    as: Alias.COMMENTS,
+    foreignKey: `userId`
+  });
+
+  Comment.belongsTo(User, {
+    as: Alias.USERS,
+    foreignKey: `userId`
+  });
+
+  return {Category, Comment, Offer, OfferCategory, User};
 };
 
 module.exports = define;

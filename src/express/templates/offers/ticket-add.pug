@@ -17,7 +17,7 @@ block content
             .ticket-form__content
               .ticket-form__row
                 .form__field
-                  input#ticket-name.js-field(type='text' name='ticket-name' required='')
+                  input#ticket-name.js-field(type='text' name='ticket-name' required)
                   label(for='ticket-name') Название
                   span Обязательное поле
               .ticket-form__row
@@ -31,7 +31,7 @@ block content
                     option(value=category.id) #{category.name}
               .ticket-form__row
                 .form__field.form__field--price
-                  input#price-field.js-field.js-price(type='number' name='price' min='1' required='')
+                  input#price-field.js-field.js-price(type='number' name='price' min='1' required)
                   label(for='price-field') Цена
                   span Обязательное поле
                 .form__switch.switch

@@ -1,28 +1,13 @@
 "use strict";
 
 const {Router} = require(`express`);
-const path = require(`path`);
-const multer = require(`multer`);
-const {nanoid} = require(`nanoid`);
 
 const {getAPI} = require(`../api`);
 const {ensureArray, prepareErrors} = require(`../../utils`);
-const UPLOAD_DIR = `../upload/img/`;
+const upload = require(`../middlewares/upload`);
 
 const offersRouter = new Router();
 const api = getAPI();
-const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
-
-const storage = multer.diskStorage({
-  destination: uploadDirAbsolute,
-  filename: (_req, file, cb) => {
-    const uniqueName = nanoid(10);
-    const extension = file.originalname.split(`.`).pop();
-    cb(null, `${uniqueName}.${extension}`);
-  }
-});
-
-const upload = multer({storage});
 
 const getAddOfferData = () => {
   return api.getCategories();
