@@ -8,37 +8,13 @@ const offer = require(`./offer`);
 const DataService = require(`../data-service/offer`);
 const {HttpCode} = require(`../../constants`);
 const initDB = require(`../lib/init-db`);
-
-const mockCategories = [`Посуда`, `Журналы`, `Книги`, `Игры`, `Цветы`, `Животные`, `Разное`];
-
-const mockOffers = [
-  {
-    title: `Куплю антиквариат.`,
-    picture: `item08.jpg`,
-    description: `Даю недельную гарантию. Кому нужен этот новый телефон если тут такое... Это настоящая находка для коллекционера! Если найдёте дешевле — сброшу цену.`,
-    type: `sale`,
-    sum: 76125,
-    categories: [`Посуда`, `Книги`],
-    comments: [
-      {
-        text: `Продаю в связи с переездом. Отрываю от сердца. С чем связана продажа? Почему так дешёво?`
-      },
-      {
-        text: `Почему в таком ужасном состоянии? Совсем немного... Вы что?! В магазине дешевле.`
-      },
-      {text: `Совсем немного...`},
-      {
-        text: `Вы что?! В магазине дешевле. Продаю в связи с переездом. Отрываю от сердца. Почему в таком ужасном состоянии?`
-      }
-    ]
-  }
-];
+const {mockCategories, mockOffers, mockUsers} = require(`./mocks`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
   const app = express();
   app.use(express.json());
-  await initDB(mockDB, {categories: mockCategories, offers: mockOffers});
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers, users: mockUsers});
   offer(app, new DataService(mockDB));
   return app;
 };

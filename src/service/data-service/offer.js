@@ -7,6 +7,7 @@ class OfferService {
     this._offer = sequelize.models.Offer;
     this._comment = sequelize.models.Comment;
     this._category = sequelize.models.Category;
+    this._user = sequelize.models.User;
   }
 
   async create(data) {
@@ -24,10 +25,22 @@ class OfferService {
   }
 
   async findAll(needComments) {
-    const include = [Alias.CATEGORIES];
+    const userModel = {
+      model: this._user,
+      as: Alias.USERS,
+      attributes: {
+        exclude: [`passwordHash`]
+      }
+    };
+
+    const include = [Alias.CATEGORIES, userModel];
 
     if (needComments) {
-      include.push(Alias.COMMENTS);
+      include.push({
+        model: this._comment,
+        as: Alias.COMMENTS,
+        include: [userModel]
+      });
     }
 
     const offers = await this._offer.findAll({
